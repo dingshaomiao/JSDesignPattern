@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>通用的惰性单例模式</title>
+</head>
+
+<body>
+  <div>
+    单例模式的逻辑：用一个变量来标记是否创建过对象，如果是，则在下次直接返回这个已经创建好的对象：
+  </div>
+  <div>
+    <button id="loginBtn">登录按钮</button>
+  </div>
+</body>
+<script>
+  var obj;
+  if (!obj) {
+    obj = 'xxxxx'
+  }
+
+  /**
+  * 核心代码：
+  * 创建对象的方法 fn 被当做参数动态传入getSingle函数
+  * getInstance返回一个新的函数，并且用一个变量result来保存fn的计算结果。
+  * result变量因为身在闭包中，它永远不会被销毁。在将来的请求中，如果result已经被赋值，那么它将返回这个值
+  */
+  var getSingle = function (fn) {
+    var result;
+    return function () {
+      return result || (result = fn.apply(this, arguments))
+    };
+  }
+
+  var createLoginLayer = function () {
+    console.log('是否每次都创建登录浮窗');
+    var div = document.createElement('div');
+    div.innerHTML = '我是登录浮窗';
+    div.style.display = 'none';
+    document.body.appendChild(div);
+    return div;
+  }
+  var createSingleLoginLayer = getSingle(createLoginLayer);
+  document.getElementById('loginBtn').onclick = function () {
+    var loginLayer = createSingleLoginLayer();
+    loginLayer.style.display = 'block'
+    console.log(loginLayer);
+  }
+</script>
+
+</html>
